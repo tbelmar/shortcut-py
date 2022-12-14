@@ -1,8 +1,9 @@
-import subprocess
 import os
 import sys
+from ast import literal_eval
+
 # We want:
-# shortcut goto <name>
+# shortcut go <name>
 # shortcut add <name> [path]
 # shortcut rm <name>
 # shortcut list
@@ -15,10 +16,10 @@ if getattr(sys, 'frozen', False):
 elif __file__:
     application_path = os.path.dirname(__file__)
 
-# populate shortcuts from shortcuts.txt, and read CLI arguments
 
-
+# populates shortcuts from shortcuts.txt, and read CLI arguments
 def init():
+    f = open(application_path + "\\shortcuts.txt", "a+")
     f = open(application_path + "\\shortcuts.txt", "r")
 
     # escapes the characters in the file before anything
@@ -33,23 +34,6 @@ def init():
     cleanupShortcuts()
 
 
-def goto(args):
-    if (len(args) < 1):
-        return -1
-
-    name = args[0]
-
-    if (name not in shortcuts):
-        print("Error: Shortcut does not exist.")
-        return -1
-
-    try:
-        sc = shortcuts[name]
-        os.system('start "" ' + '"' + sc + '"')
-    except:
-        print("Error: Failed to open directory.")
-
-
 # deletes duplicate shortcuts from the file
 def cleanupShortcuts():
     f = open(application_path + "\\shortcuts.txt", "w")
@@ -58,59 +42,115 @@ def cleanupShortcuts():
         f.write(key + " " + shortcuts[key] + "\n")
 
 
+# opens a shortcut in the file explorer
+def goto(args):
+    if (len(args) < 1):
+        print("Error: Please supply a shortcut to go to.")
+        display_help()
+        return 1
+
+    name = args[0].lower()
+
+    if (name not in shortcuts):
+        print("Error: Shortcut does not exist.")
+        return 1
+
+    try:
+        sc = shortcuts[name]
+        os.system('start "" ' + '"' + sc + '"')
+    except:
+        print("Error: Failed to open directory.")
+
+
 # deletes a shortcut
 def rm(args):
     if (len(args) < 1):
-        print("Error: Please supply an shortcut to remove.")
+        print("Error: Please supply a shortcut to remove.")
+        display_help()
+        return 1
 
-    name = args[0]
+    name = args[0].lower()
 
     if (name not in shortcuts):
         print("Error: Shortcut not found.")
-        return -1
+        return 1
 
     del shortcuts[name]
+    print("Shortcut successfully removed.")
+
     cleanupShortcuts()
 
 
 # adds or updates a shortcut's path
 def add(args):
-    name = args[0]
+    if (len(args) < 1):
+        print("Error: Please supply a shortcut name and (optionally) a path.")
+        display_help()
+        return 1
+
+    name = args[0].lower()
     path = repr(' '.join(args[1:]))[1:-1] if len(args) >= 2 else ""
 
     if (path == ""):
         path = repr(os.getcwd())[1:-1]
-        print(path)
 
     f = open(application_path + "\\shortcuts.txt", "a")
     f.write(name + " " + path + "\n")
     f.close()
     shortcuts[name] = path
 
+    path = literal_eval("'" + path + "'")
 
-def list(_):
-    print("SHORTCUTS")
+    print("Shortcut successfully added.")
+    print("\t" + f'{"NAME":<16}{"PATH"}')
+    print("\t" + f'{name:<16}{path}')
+
+
+# displays all available shortcuts
+def list(_=None):
+    print("Shortcuts")
+    print("\t" + f'{"NAME":<16}{"PATH"}')
     for sc in shortcuts:
-        print("| " + sc + " => " + shortcuts[sc])
-    print("\nTo open a directory...")
-    print("\tscut goto <shortcut>")
+        path = literal_eval("'" + shortcuts[sc] + "'")
+        print("\t" + f'{sc:<16}{path}')
+    print("\nTo open a directory in the path column...")
+    print("\tscut go <name>")
 
 
-def display_help():
-    pass
+# displays help menu
+def display_help(_=None):
+    print("usage:")
+    print(
+        "\t" + f'{"scut go <name>":<30}{"Open a shortcut in the file explorer"}')
+    print(
+        "\t" + f'{"scut add <name> [location]":<30}{"Add a new shortcut, or update an existing one"}')
+    print(
+        "\t" + f'{"scut remove <name>":<30}{"Delete a shortcut"}')
+    print(
+        "\t" + f'{"scut list":<30}{"Display all shortcuts"}')
+    print(
+        "\t" + f'{"scut help":<30}{"Display this menu"}')
 
 
 def main():
     init()
 
     commands = {
+        "goto": goto,
         "go": goto,
         "g": goto,
+
         "add": add,
         "a": add,
+
         "remove": rm,
         "rm": rm,
-        "list": list
+        "r": rm,
+
+        "list": list,
+        "ls": list,
+
+        "help": display_help
     }
 
     if (len(sys.argv) < 2):
