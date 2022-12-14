@@ -1,0 +1,3 @@
+afdb C:\\Users\\tomas\\Documents\\MEGAsync\\GitHub\\AFDB
+kth C:\\Users\\tomas\\Documents\\MEGAsync\\KTH [College]
+github C:\\Users\\tomas\\Documents\\MEGAsync\\GitHub
