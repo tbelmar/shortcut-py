@@ -31,11 +31,9 @@ def init():
         if (len(sc) == 2):
             shortcuts[sc[0]] = sc[1]
 
-    cleanupShortcuts()
-
 
 # deletes duplicate shortcuts from the file
-def cleanupShortcuts():
+def cleanupShortcutsFile():
     f = open(application_path + "\\shortcuts.txt", "w")
 
     for key in shortcuts:
@@ -77,8 +75,6 @@ def rm(args):
 
     del shortcuts[name]
     print("Shortcut successfully removed.")
-
-    cleanupShortcuts()
 
 
 # adds or updates a shortcut's path
@@ -169,6 +165,8 @@ def main():
     args = sys.argv[2:len(sys.argv)]
 
     fun(args)
+
+    cleanupShortcutsFile()
 
 
 main()
