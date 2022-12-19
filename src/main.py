@@ -161,10 +161,11 @@ def main():
         display_help()
         return 1
 
-    fun = commands[command]
+    
+    func = commands[command]
     args = sys.argv[2:len(sys.argv)]
 
-    fun(args)
+    func(args)
 
     cleanupShortcutsFile()
 
