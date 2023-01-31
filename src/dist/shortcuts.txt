@@ -1,3 +1,6 @@
 afdb C:\\Users\\tomas\\Documents\\MEGAsync\\GitHub\\AFDB
 kth C:\\Users\\tomas\\Documents\\MEGAsync\\KTH [College]
 gh C:\\Users\\tomas\\Documents\\MEGAsync\\GitHub
+clips C:\\Users\\tomas\\Videos
+portfolio C:\\Users\\tomas\\Documents\\MEGAsync\\GitHub\\tbelmar.github.io
+scut C:\\Users\\tomas\\Documents\\MEGAsync\\GitHub\\shortcut-py

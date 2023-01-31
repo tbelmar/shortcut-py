@@ -1,5 +1,6 @@
 import os
 import sys
+import subprocess
 from ast import literal_eval
 
 # We want:
@@ -41,7 +42,7 @@ def cleanupShortcutsFile():
 
 
 # opens a shortcut in the file explorer
-def goto(args):
+def open_dir(args):
     if (len(args) < 1):
         print("Error: Please supply a shortcut to go to.")
         display_help()
@@ -56,6 +57,46 @@ def goto(args):
     try:
         sc = shortcuts[name]
         os.system('start "" ' + '"' + sc + '"')
+    except:
+        print("Error: Failed to open directory.")
+
+
+# opens a shortcut using the default code editor
+def code(args):
+    if (len(args) < 1):
+        print("Error: Please supply a shortcut to open in code.")
+        display_help()
+        return 1
+
+    name = args[0].lower()
+
+    if (name not in shortcuts):
+        print("Error: Shortcut does not exist.")
+        return 1
+
+    try:
+        sc = shortcuts[name]
+        os.system('code "" ' + '"' + sc + '"')
+    except:
+        print("Error: Failed to open directory.")
+
+
+# opens a shortcut's directory in the command line
+def goto(args):
+    if (len(args) < 1):
+        print("Error: Please supply a shortcut to open the directory of.")
+        display_help()
+        return 1
+
+    name = args[0].lower()
+
+    if (name not in shortcuts):
+        print("Error: Shortcut does not exist.")
+        return 1
+
+    try:
+        sc = shortcuts[name]
+        os.system('start cmd /K cd "' + sc + '"')
     except:
         print("Error: Failed to open directory.")
 
@@ -109,15 +150,22 @@ def list(_=None):
     for sc in shortcuts:
         path = literal_eval("'" + shortcuts[sc] + "'")
         print("\t" + f'{sc:<16}{path}')
-    print("\nTo open a directory in the path column...")
-    print("\tscut go <name>")
+    print("\nTo open a directory from the path column...")
+    print(
+        "\t" + f'{"scut open <name>":<25}{"In the file explorer"}')
+    print(
+        "\t" + f'{"scut go <name>":<25}{"In the command line"}')
 
 
 # displays help menu
 def display_help(_=None):
     print("usage:")
     print(
-        "\t" + f'{"scut go <name>":<30}{"Open a shortcut in the file explorer"}')
+        "\t" + f'{"scut go <name>":<30}{"Go to the directory of a shortcut in the command line"}')
+    print(
+        "\t" + f'{"scut open <name>":<30}{"Open a shortcut in the file explorer"}')
+    print(
+        "\t" + f'{"scut code <name>":<30}{"Open a shortcut with your default code editor"}')
     print(
         "\t" + f'{"scut add <name> [location]":<30}{"Add a new shortcut, or update an existing one"}')
     print(
@@ -135,6 +183,11 @@ def main():
         "goto": goto,
         "go": goto,
         "g": goto,
+
+        "open": open_dir,
+        "o": open_dir,
+
+        "code": code,
 
         "add": add,
         "a": add,
